@@ -138,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Aware.startLocations(this);
 
 
+
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
