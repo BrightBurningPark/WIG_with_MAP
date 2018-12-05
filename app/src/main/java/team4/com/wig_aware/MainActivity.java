@@ -1,28 +1,20 @@
 /*
 일단, 되는 코드... 내 현재 위치 받아와서 지도에 출력하는 코드.
 그러면 우리는 일단 이거 기반으로 수정해나가는 게 좋을 것 같은데...
-
 앱을 실행시키면 다음 순서대로 메소드들이 실행됩니다.
 oncreate -> onstart -> onmapready -> onconnected -> onconnected:call startlocationupdates
 ->startlocationupdates: fusedlocationapi.requestlocationupdates
-
 이후 일정 시간마다 현재위치를 업데이트
 onlocationchanged -> setcurrentlocation 번갈아가며 호출 반복
-
-
 그러면 onlocatiochanged메소드가 주기적으로 호출되면서 위치가 바뀌었는지 감시하는거네.
 파란점 옮기는 코드만 남기고 마커 수정하는 코드는 처내버려 둬야겠다.
-
 파란점 클릭시 마커 복귀시키도록 바꾸면 좋을 듯
-
 일단 지금 좆된게 우리 여행지가 이미 정해져있기때문에 거기만 마커가 찍히도록 해야 해.
 시발 ㅋㅋㅋㅋ 좆됨 -> 내가 어떻게든 해보겠음.
-
 12/2
 -> 나를 나타내는 마커는 우리 앱 커스텀 컬러or프로필사진, 여행지를 나타내는 마커는 붉은색
 붉은색 마커만 선택 가능, 붉은색 마커 클릭 시 버튼 나타남. 이걸로 여행지 선택하도록 하면 됨. 데이터베이스에서 여행지 쿼리해서
 다중 마커로 구현하면 될 듯 하다.
-
 12/3
 2:31> 일단 데이터베이스 여기에 꾸겨넣는거 성공은 함. 입력이 되냐 안되냐는 확인 못해봤지만...
 지도도 성공적으로 나옴. 너무 행복하다. 지금은 oncreate의 로컬 변수로 데이터베이스를 불러오고 있지만 (SQLiteDatabase db 변수)
@@ -31,7 +23,6 @@ onlocationchanged -> setcurrentlocation 번갈아가며 호출 반복
 일단 데이터베이스에 튜플을 좀 넣어야 하는데 ㅋㅋㅋ 할 수가 없네
 11:39> nullpointerexception 해결함.
 이제 UI 만들어서 넣으면 됨. 나는 데이터베이스 스키마 수정하고 dbhelper에 메소드 정의부터 다시 해야 겠다... 다시까지는 아니고 ㅇ
-
  */
 
 package team4.com.wig_no_aware;
@@ -62,6 +53,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.aware.Aware;
+import com.aware.Aware_Preferences;
 
 //구글맵스
 import com.google.android.gms.common.ConnectionResult;
@@ -87,6 +80,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import  java.io.IOException;
 import  java.util.List;
 import  java.util.Locale;
+
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -129,6 +123,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Aware Setting
+        Intent aware = new Intent(this, Aware.class);
+        startService(aware);
+        //Activate Accelerometer
+        Aware.setSetting(this, Aware_Preferences.STATUS_LOCATION_GPS, true);
+        Aware.setSetting(this, Aware_Preferences.FREQUENCY_LOCATION_GPS, 5);
+        //Apply settings
+        Aware.startLocations(this);
+        //
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
