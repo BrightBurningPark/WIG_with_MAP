@@ -1,12 +1,10 @@
-package team4.com.wig_no_aware;
+package team4.com.wig_aware;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
-
-import static java.security.AccessController.getContext;
 
 public class RightSideBarView  extends RelativeLayout implements View.OnClickListener {
     /** 메뉴버튼 클릭 이벤트 리스너 */
@@ -34,13 +32,13 @@ public class RightSideBarView  extends RelativeLayout implements View.OnClickLis
 
     @Override public void onClick(View view) {
         switch (view.getId()){
-                    case R.id.btn_cancel :
-                        listener.btnCancel(); break;
+            case R.id.btn_cancel :
+                listener.btnCancel(); break;
 
-                    case R.id.btn_side_level_1 :
-                        listener.btnLevel1(); break;
+            case R.id.btn_side_level_1 :
+                listener.btnLevel1(); break;
 
-                    default: break;
+            default: break;
         }
     }
 }

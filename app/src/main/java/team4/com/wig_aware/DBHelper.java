@@ -1,4 +1,4 @@
-package team4.com.wig_no_aware;
+package team4.com.wig_aware;
 
 import android.content.Context;
 import android.database.Cursor;
