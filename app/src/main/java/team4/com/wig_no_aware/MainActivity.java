@@ -40,6 +40,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -64,6 +65,8 @@ import android.widget.Toast;
 
 
 //구글맵스
+import com.aware.Aware;
+import com.aware.Aware_Preferences;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -79,12 +82,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
 import  java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import  java.util.List;
 import  java.util.Locale;
 
@@ -92,6 +92,16 @@ import  java.util.Locale;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener{
+
+    //테스트중
+    public static boolean permissions_ok;
+    private static Hashtable<Integer, Boolean> listSensorType;
+    private static SharedPreferences prefs;
+
+    private static final ArrayList<String> REQUIRED_PERMISSIONS = new ArrayList<>();
+    private static final Hashtable<String, Integer> optionalSensors = new Hashtable<>();
+
+    private final Aware.AndroidPackageMonitor packageMonitor = new Aware.AndroidPackageMonitor();
 
     //데이터베이스 버전
     public static final int dbVersion = 3;
@@ -135,6 +145,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         //이상이 기본 코드... 라 생각하면 된다.
 
+
+        //AWARE관련 코드...
+
+        //Initialise AWARE
+        Intent aware = new Intent(this, Aware.class);
+        startService(aware);
+        //Activate Accelerometer
+        Aware.setSetting(this, Aware_Preferences.STATUS_LOCATION_GPS, true);
+        //Set sampling frequency
+        Aware.setSetting(this, Aware_Preferences.FREQUENCY_LOCATION_GPS, 0);
+        //Apply settings
+        Aware.startLocations(this);
+
+
         //데이터베이스 초기화(이미되있으면생략), 접근 객체 생성
         //DB헬퍼를 쓸려면 다 이 코드를 호출해야 하는 모양...
         final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
@@ -152,13 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         //데이터베이스 튜플 넣는 테스트코드
-        Button button = (Button) findViewById(R.id.btn);
-        button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                dbHelper.insert("a", "b", 3);
-            }
-        });
 
 
         //이거 막줄 this로 onMapReady함수가 호출된다. 지도 UI매핑완료하고 소프트웨어적으로 초기설정하는 작업.

@@ -50,9 +50,18 @@ public class DBHelper extends SQLiteOpenHelper {
     // DB 업그레이드를 위해 버전이 변경될 때 호출되는 함수
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if(db.getVersion() == 2) {
-            db.execSQL("DROP TABLE IF EXISTS PLACES");
-            onCreate(db);
+        switch (oldVersion){
+            case 1:
+                db.execSQL("DROP TABLE IF EXISTS PLACES");
+                onCreate(db);
+
+            case 2:
+                db.execSQL("DROP TABLE IF EXISTS PLACES");
+                onCreate(db);
+
+            case 3:
+                db.execSQL("DROP TABLE IF EXISTS PLACES");
+                onCreate(db);
         }
     }
 
@@ -77,7 +86,7 @@ public class DBHelper extends SQLiteOpenHelper {
     //이하는 원래 읽고 쓰고 하는 코드인데...
     // 그냥 버튼에다가 SQL쿼리 직접 할당하는게 훨씬 나아보여서 안함.
 
-    public void insert(String create_at, String item, int price) {
+    public void insert_to_visited(String create_at, String item, int price) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         // DB에 입력한 값으로 행 추가
