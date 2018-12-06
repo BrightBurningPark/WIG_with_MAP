@@ -65,14 +65,6 @@ public class ListViewBtnAdapter extends ArrayAdapter implements View.OnClickList
         iconImageView.setImageDrawable(listViewItem.getIcon());
         textTextView.setText(listViewItem.getText());
 
-        // button1 클릭 시 TextView(textView1)의 내용 변경.
-        Button button1 = (Button) convertView.findViewById(R.id.button1);
-        button1.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                textTextView.setText(Integer.toString(pos + 1) + "번 아이템 선택.");
-            }
-        });
-
         // button2의 TAG에 position값 지정. Adapter를 click listener로 지정.
         Button button2 = (Button) convertView.findViewById(R.id.button2);
         button2.setTag(position);
@@ -83,10 +75,7 @@ public class ListViewBtnAdapter extends ArrayAdapter implements View.OnClickList
 
     // button2가 눌려졌을 때 실행되는 onClick함수.
     public void onClick(View v) {
-        // ListBtnClickListener(MainActivity)의 onListBtnClick() 함수 호출.
-        if (this.listBtnClickListener != null) {
-            this.listBtnClickListener.onListBtnClick((int)v.getTag()) ;
-        }
+
     }
 
 }

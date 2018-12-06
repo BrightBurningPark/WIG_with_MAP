@@ -2,6 +2,8 @@ package team4.com.wig_aware;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,15 +27,23 @@ public class VisitActivity extends AppCompatActivity implements ListViewBtnAdapt
 
         adapter = new ListViewBtnAdapter(this, R.layout.listview_btn_item, items, this) ;
 
-        // 리스트뷰 참조 및 Adapter달기
+        // 리스트뷰 참조 및 Adapter 달기
         listView = (ListView) findViewById(R.id.visitList);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //아이템 클릭 이벤트
+            }
+        });
 
 
     }
 
+    //버튼 2 누르면 구동
     @Override
     public void onListBtnClick(int position) {
-        Toast.makeText(this, Integer.toString(position+1) + " Item is selected..", Toast.LENGTH_SHORT).show() ;
+        //지도에서 확인시키는 버튼으로 만들 듯...
     }
 }

@@ -28,14 +28,14 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="번호 선택"
+            android:text="여행지 평가"
             android:layout_weight="1" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Toast에서 확인"
+            android:text="삭제"
             android:layout_weight="1" />
 
     </LinearLayout>
