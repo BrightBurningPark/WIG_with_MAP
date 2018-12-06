@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity {
                 // Start the Signup activity
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
-                finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
@@ -57,11 +56,13 @@ public class LoginActivity extends AppCompatActivity {
     public void login() {
         Log.d(TAG, "Login");
 
+        // If authentication falied
         if (!validate()) {
             onLoginFailed();
             return;
         }
 
+        // If authentication successed
         _loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
@@ -84,6 +85,10 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 }, 3000);
+
+        Intent intent = new Intent(getApplicationContext(), VisitActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 

@@ -33,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     Button _signupButton;
     @BindView(R.id.link_login)
     TextView _loginLink;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +54,15 @@ public class SignupActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), team4.com.wig_aware.LoginActivity.class);
                 startActivity(intent);
                 finish();
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 
     public void signup() {
@@ -100,7 +106,10 @@ public class SignupActivity extends AppCompatActivity {
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
+        Intent intent = new Intent(getApplicationContext(), team4.com.wig_aware.LoginActivity.class);
+        startActivity(intent);
         finish();
+        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 
     public void onSignupFailed() {
@@ -141,7 +150,7 @@ public class SignupActivity extends AppCompatActivity {
             _emailText.setError(null);
         }
 
-        if (mobile.isEmpty() || mobile.length()!=10) {
+        if (mobile.isEmpty() || mobile.length() != 10) {
             _mobileText.setError("Enter Valid Mobile Number");
             valid = false;
         } else {
