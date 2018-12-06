@@ -43,11 +43,18 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.aware.Aware;
@@ -77,9 +84,10 @@ import  java.util.Locale;
 
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+public class NowActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener{
+
 
     //테스트중
     public static boolean permissions_ok;
@@ -123,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //db헬퍼는 전역으로 써야 쓸 수 있는 것 같... 다?? 아닌가
     //private DBHelper dbHelper;
 
+
     //생성시 호출되는 메소드
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,17 +142,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startService(aware);
         //Activate Accelerometer
         Aware.setSetting(this, Aware_Preferences.STATUS_LOCATION_GPS, true);
-        Aware.setSetting(this, Aware_Preferences.FREQUENCY_LOCATION_GPS, 5);
+        Aware.setSetting(this, Aware_Preferences.FREQUENCY_LOCATION_GPS, 100);
         //Apply settings
         Aware.startLocations(this);
-
-
 
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         //이상이 기본 코드... 라 생각하면 된다.
+
+
+        ActionBar appbar = getSupportActionBar();
+
+
 
         //데이터베이스 초기화(이미되있으면생략), 접근 객체 생성
         //DB헬퍼를 쓸려면 다 이 코드를 호출해야 하는 모양...
@@ -170,8 +182,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        Button gotovisitBtn = (Button)findViewById(R.id.gotovisit);
+        gotovisitBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(NowActivity.this, VisitActivity.class);
+                startActivity(intent);
+            }
+        });
 
-        //실행흐름 무관하게, nullpointerexception 계속 뜬다. 이거 고쳐야함. 나머지는 잘됨. 데이터 집어넣는거 잘 되는거 확인함.
+
 
         //마커 그리는 코드는 밑에 맵 초기화 함수에서 돌림
 
@@ -563,7 +583,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @TargetApi(Build.VERSION_CODES.M)
     private void showDialogForPermission(String msg) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NowActivity.this);
         builder.setTitle("알림");
         builder.setMessage(msg);
         builder.setCancelable(false);
@@ -585,7 +605,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void showDialogForPermissionSetting(String msg) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NowActivity.this);
         builder.setTitle("알림");
         builder.setMessage(msg);
         builder.setCancelable(true);
@@ -613,7 +633,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NowActivity.this);
         builder.setTitle("위치 서비스 비활성화");
         builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
                 + "위치 설정을 수정하실래요?");
@@ -660,6 +680,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 break;
+        }
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> adapter, View view, int position, long id){
+
         }
     }
 }

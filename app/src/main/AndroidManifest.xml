@@ -16,13 +16,18 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC2BS3JFalZIakd-UdmcETwqeVZF9aguWU"/>
 
-        <activity android:name="team4.com.wig_aware.MainActivity">
+        <activity android:name="team4.com.wig_aware.NowActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".VisitActivity">
+
+        </activity>
+
     </application>
 
 </manifest>
