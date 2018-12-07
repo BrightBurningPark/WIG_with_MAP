@@ -65,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void drawPlaceMarker(GoogleMap googleMap){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM PLACES", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM PLACE", null);
 
         while(cursor.moveToNext()){
             //마커 생성 & 옵션 설정.

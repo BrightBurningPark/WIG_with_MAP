@@ -149,7 +149,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_now);
         //이상이 기본 코드... 라 생각하면 된다.
 
 
