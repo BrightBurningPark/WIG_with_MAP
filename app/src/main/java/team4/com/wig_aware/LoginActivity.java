@@ -85,10 +85,6 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 }, 3000);
-
-        Intent intent = new Intent(getApplicationContext(), VisitActivity.class);
-        startActivity(intent);
-        finish();
     }
 
 
@@ -106,12 +102,14 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Disable going back to the VisitActivity
+        // Disable going back to the NowActivity
         moveTaskToBack(true);
     }
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+        Intent intent = new Intent(getApplicationContext(), NowActivity.class);
+        startActivity(intent);
         finish();
     }
 

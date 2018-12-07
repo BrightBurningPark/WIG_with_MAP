@@ -77,7 +77,7 @@ import  java.util.Locale;
 
 
 
-public class VisitActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+public class NowActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener{
 
@@ -131,14 +131,10 @@ public class VisitActivity extends AppCompatActivity implements OnMapReadyCallba
         //Aware Setting
         Intent aware = new Intent(this, Aware.class);
         startService(aware);
-        //Activate Accelerometer
+        //Activate Location_GPS
         Aware.setSetting(this, Aware_Preferences.STATUS_LOCATION_GPS, true);
         Aware.setSetting(this, Aware_Preferences.FREQUENCY_LOCATION_GPS, 5);
-        //Apply settings
         Aware.startLocations(this);
-
-
-
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -509,6 +505,10 @@ public class VisitActivity extends AppCompatActivity implements OnMapReadyCallba
                         Manifest.permission.ACCESS_FINE_LOCATION);
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
+        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS);
 
         if (hasFineLocationPermission == PackageManager
                 .PERMISSION_DENIED && fineLocationRationale)
@@ -563,7 +563,7 @@ public class VisitActivity extends AppCompatActivity implements OnMapReadyCallba
     @TargetApi(Build.VERSION_CODES.M)
     private void showDialogForPermission(String msg) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(VisitActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NowActivity.this);
         builder.setTitle("알림");
         builder.setMessage(msg);
         builder.setCancelable(false);
@@ -572,6 +572,7 @@ public class VisitActivity extends AppCompatActivity implements OnMapReadyCallba
                 ActivityCompat.requestPermissions(mActivity,
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
             }
         });
 
@@ -585,7 +586,7 @@ public class VisitActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private void showDialogForPermissionSetting(String msg) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(VisitActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NowActivity.this);
         builder.setTitle("알림");
         builder.setMessage(msg);
         builder.setCancelable(true);
@@ -613,7 +614,7 @@ public class VisitActivity extends AppCompatActivity implements OnMapReadyCallba
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(VisitActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(NowActivity.this);
         builder.setTitle("위치 서비스 비활성화");
         builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
                 + "위치 설정을 수정하실래요?");
