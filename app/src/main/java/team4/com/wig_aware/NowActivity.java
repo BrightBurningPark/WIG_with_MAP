@@ -100,14 +100,14 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     private final Aware.AndroidPackageMonitor packageMonitor = new Aware.AndroidPackageMonitor();
 
     //데이터베이스 버전
-    public static final int dbVersion = 3;
+    public static final int dbVersion = 5;
 
     //이하 구글맵스 관련 전역변수
     private GoogleApiClient mGoogleApiClient = null;
     private GoogleMap mGoogleMap = null;
     private Marker currentMarker = null;
 
-    private static final String TAG = "googlemap_example";
+    private static final String TAG = "googlemap";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2002;
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
@@ -153,8 +153,9 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         //이상이 기본 코드... 라 생각하면 된다.
 
 
-        ActionBar appbar = getSupportActionBar();
 
+
+        ActionBar appbar = getSupportActionBar();
 
 
         //데이터베이스 초기화(이미되있으면생략), 접근 객체 생성
@@ -176,11 +177,11 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         //데이터베이스 튜플 넣는 테스트코드
 
 
-        //이거 막줄 this로 onMapReady함수가 호출된다. 지도 UI매핑완료하고 소프트웨어적으로 초기설정하는 작업.
+        //이거 막줄 this로 onMapReady함수가 호출된다. 지도 UI매핑완료하고 초기설정하는 작업.
         //실행흐름상 둘다 처음 시작 시 한번만 실행되고, 순서는 onCreate -> onMapReady -> 다시 onCreate다.
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
 
         Button gotovisitBtn = (Button)findViewById(R.id.gotovisit);
         gotovisitBtn.setOnClickListener(new Button.OnClickListener() {
@@ -193,8 +194,9 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
 
+        Toast msg =Toast.makeText(this, "done", Toast.LENGTH_LONG);
+        msg.show();
         //마커 그리는 코드는 밑에 맵 초기화 함수에서 돌림
-
     }
 
 
@@ -267,7 +269,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
         //mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(0));
         mGoogleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener(){
 
             @Override

@@ -33,7 +33,7 @@ public class ListViewBtnAdapter extends ArrayAdapter implements View.OnClickList
 
 
     // ListViewBtnAdapter 생성자. 마지막에 ListBtnClickListener 추가.
-    ListViewBtnAdapter(Context context, int resource, ArrayList<ListViewBtnItem> list, ListBtnClickListener clickListener) {
+    public ListViewBtnAdapter(Context context, int resource, ArrayList<ListViewBtnItem> list, ListBtnClickListener clickListener) {
         super(context, resource, list) ;
 
         // resource id 값 복사. (super로 전달된 resource를 참조할 방법이 없음.)
@@ -63,7 +63,7 @@ public class ListViewBtnAdapter extends ArrayAdapter implements View.OnClickList
 
         // 아이템 내 각 위젯에 데이터 반영
         iconImageView.setImageDrawable(listViewItem.getIcon());
-        textTextView.setText(listViewItem.getText());
+        textTextView.setText(listViewItem.getVisited());
 
         // button2의 TAG에 position값 지정. Adapter를 click listener로 지정.
         Button button2 = (Button) convertView.findViewById(R.id.button2);
@@ -75,6 +75,7 @@ public class ListViewBtnAdapter extends ArrayAdapter implements View.OnClickList
 
     // button2가 눌려졌을 때 실행되는 onClick함수.
     public void onClick(View v) {
+        final DBHelper dbHelper = new DBHelper(getContext(), "WIG.db", null, 5);
 
     }
 
