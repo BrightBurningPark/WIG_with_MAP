@@ -81,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
         // TODO: Implement your own authentication logic here.
 
         if(!auth(email, password)){
+            onLoginFailed();
             return;
         }
 
