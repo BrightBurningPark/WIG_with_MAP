@@ -88,6 +88,14 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener{
 
+    //데이터베이스 버전
+    public static final int dbVersion = 5;
+
+
+    //현재 로그인중인 사용자명
+    String user_name;
+
+
 
     //테스트중
     public static boolean permissions_ok;
@@ -98,9 +106,6 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final Hashtable<String, Integer> optionalSensors = new Hashtable<>();
 
     private final Aware.AndroidPackageMonitor packageMonitor = new Aware.AndroidPackageMonitor();
-
-    //데이터베이스 버전
-    public static final int dbVersion = 5;
 
     //이하 구글맵스 관련 전역변수
     private GoogleApiClient mGoogleApiClient = null;
@@ -136,6 +141,11 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        Intent intent_log = getIntent();
+        user_name = intent_log.getStringExtra("username");
+
 
         //Aware Setting
         Intent aware = new Intent(this, Aware.class);
@@ -188,6 +198,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(NowActivity.this, VisitActivity.class);
+                intent.putExtra("username", user_name);
                 startActivity(intent);
             }
         });

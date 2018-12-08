@@ -28,7 +28,7 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="여행지 평가"
+            android:text="평가"
             android:layout_weight="1" />
 
         <Button

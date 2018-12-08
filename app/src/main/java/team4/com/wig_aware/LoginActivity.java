@@ -2,6 +2,8 @@ package team4.com.wig_aware;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,6 +15,8 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static team4.com.wig_aware.NowActivity.dbVersion;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -76,6 +80,11 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: Implement your own authentication logic here.
 
+        if(!auth(email, password)){
+            return;
+        }
+
+
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
@@ -85,6 +94,18 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 }, 3000);
+    }
+
+    private boolean auth(String email, String in_password){
+        final DBHelper dbHelper = new DBHelper(this, "WIG.db", null, dbVersion);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        if(db.rawQuery("SELECT * FROM USERS AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null) != null){
+            db.close();
+            return true;
+        }
+        db.close();
+        return false;
     }
 
 
@@ -109,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
         Intent intent = new Intent(getApplicationContext(), NowActivity.class);
+        intent.putExtra("username", _emailText.getText().toString());
         startActivity(intent);
         finish();
     }
