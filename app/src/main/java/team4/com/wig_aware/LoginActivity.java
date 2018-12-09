@@ -16,11 +16,12 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static team4.com.wig_aware.NowActivity.dbVersion;
-
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+
+    //데이터베이스 버전
+    public static final int dbVersion = 5;
 
     @BindView(R.id.input_email)
     EditText _emailText;
@@ -81,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         // TODO: Implement your own authentication logic here.
 
         if(!auth(email, password)){
+            onLoginFailed();
             return;
         }
 
@@ -93,14 +95,14 @@ public class LoginActivity extends AppCompatActivity {
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 1000);
     }
 
     private boolean auth(String email, String in_password){
         final DBHelper dbHelper = new DBHelper(this, "WIG.db", null, dbVersion);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        if(db.rawQuery("SELECT * FROM USERS AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null) != null){
+        if(db.rawQuery("SELECT * FROM USER AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null) != null){
             db.close();
             return true;
         }
