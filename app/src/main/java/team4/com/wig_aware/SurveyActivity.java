@@ -19,7 +19,7 @@ public class SurveyActivity extends AppCompatActivity {
     private static final String TAG = "Survey";
 
     //데이터베이스 버전
-    public static final int dbVersion = 5;
+    public static final int dbVersion = 6;
 
     //현재 로그인중인 사용자명
     String user_name;

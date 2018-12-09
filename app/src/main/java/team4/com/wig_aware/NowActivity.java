@@ -90,12 +90,11 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         LocationListener {
 
     //데이터베이스 버전
-    public static final int dbVersion = 5;
+    public static final int dbVersion = 6;
 
 
     //현재 로그인중인 사용자명
     String user_name;
-
 
     //테스트중
     public static boolean permissions_ok;
@@ -160,12 +159,13 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT survey FROM USER WHERE id = '" + user_name + "' ;", null);
-        cursor.moveToNext();
-        String user_survey = cursor.getString(0);
-        if(user_survey.equals("000")) {
-            Intent intent = new Intent(getApplicationContext(), SurveyActivity.class);
-            intent.putExtra("username", user_name);
-            startActivity(intent);
+        if (cursor.moveToFirst() && cursor.getCount() > 0) {
+            String user_survey = cursor.getString(0);
+            if (user_survey.equals("000")) {
+                Intent intent = new Intent(getApplicationContext(), SurveyActivity.class);
+                intent.putExtra("username", user_name);
+                startActivity(intent);
+            }
         }
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -335,7 +335,6 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         currentPosition
                 = new LatLng(location.getLatitude(), location.getLongitude());
 
-
         Log.d(TAG, "onLocationChanged : ");
 
         String markerTitle = getCurrentAddress(currentPosition);
@@ -346,6 +345,8 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         setCurrentLocation(location, markerTitle, markerSnippet);
 
         mCurrentLocatiion = location;
+
+        popupVisit();
     }
 
     @Override
@@ -477,7 +478,6 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mMoveMapByUser = false;
 
-
         if (currentMarker != null) currentMarker.remove();
 
 
@@ -581,7 +581,6 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
             } else {
-
                 checkPermissions();
             }
         }
@@ -701,5 +700,40 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
         intent.putExtra("username", user_name);
         startActivity(intent);
+    }
+
+    private void popupVisit(){
+        ExDBHelper exDBHelper = new ExDBHelper(getApplicationContext());
+        String[] location = exDBHelper.getLocation();
+        double latitude = Double.parseDouble(location[0]);
+        double longitude = Double.parseDouble(location[1]);
+        ((MyApplication) this.getApplication()).setCurrent_lat(latitude);
+        ((MyApplication) this.getApplication()).setCurrent_lon(longitude);
+
+        double min_lat = latitude - 0.05;
+        double max_lat = latitude + 0.05;
+        double min_lon = longitude - 0.05;
+        double max_lon = longitude + 0.05;
+
+        // TODO: Database 작업 후 dialog show 여부 결정
+        // showDialogForVisit("여행을 오셨나요?");
+    }
+
+    private void showDialogForVisit(String msg) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(NowActivity.this);
+        builder.setTitle("알림");
+        builder.setMessage(msg);
+        builder.setCancelable(true);
+        builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        });
+        builder.create().show();
     }
 }

@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
-    public static final int dbVersion = 5;
+    public static final int dbVersion = 6;
 
     @BindView(R.id.input_email)
     EditText _emailText;
@@ -86,14 +86,10 @@ public class SignupActivity extends AppCompatActivity {
         final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        if (db.rawQuery("SELECT * FROM USER AS U WHERE U.id = '" + email + "';", null) == null) {
-            db.rawQuery("INSERT INTO USER VALUES ('" +
-                    email + "', '" +
-                    password + "', '" +
-                    survey + "');", null);
-        }
-        else
-            onSignupFailed();
+        db.execSQL("INSERT INTO USER VALUES ('" +
+                email + "', '" +
+                password + "', '" +
+                survey + "', '0', '0');");
 
         db.close();
 
@@ -120,7 +116,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
     }

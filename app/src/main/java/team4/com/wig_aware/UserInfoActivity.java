@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 public class UserInfoActivity extends AppCompatActivity {
     String user_name;
-    public static int dbVersion = 5;
+    public static int dbVersion = 6;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

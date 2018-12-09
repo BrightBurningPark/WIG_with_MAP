@@ -21,7 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int REQUEST_SIGNUP = 0;
 
     //데이터베이스 버전
-    public static final int dbVersion = 5;
+    public static final int dbVersion = 6;
 
     @BindView(R.id.input_email)
     EditText _emailText;
@@ -81,8 +81,9 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: Implement your own authentication logic here.
 
-        if(!auth(email, password)){
+        if (!auth(email, password)) {
             onLoginFailed();
+            progressDialog.dismiss();
             return;
         }
 
@@ -95,14 +96,14 @@ public class LoginActivity extends AppCompatActivity {
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
-                }, 1000);
+                }, 3000);
     }
 
-    private boolean auth(String email, String in_password){
-        final DBHelper dbHelper = new DBHelper(this, "WIG.db", null, dbVersion);
+    private boolean auth(String email, String in_password) {
+        final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        if(db.rawQuery("SELECT * FROM USER AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null) != null){
+        Cursor cursor = db.rawQuery("SELECT * FROM USER AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null);
+        if (cursor.moveToFirst() && cursor.getCount() > 0) {
             db.close();
             return true;
         }
