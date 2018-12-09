@@ -33,6 +33,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -76,17 +78,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import  java.io.IOException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import  java.util.List;
-import  java.util.Locale;
-
+import java.util.List;
+import java.util.Locale;
 
 
 public class NowActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener{
+        LocationListener {
 
     //데이터베이스 버전
     public static final int dbVersion = 5;
@@ -94,7 +95,6 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //현재 로그인중인 사용자명
     String user_name;
-
 
 
     //테스트중
@@ -142,10 +142,8 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Intent intent_log = getIntent();
         user_name = intent_log.getStringExtra("username");
-
 
         //Aware Setting
         Intent aware = new Intent(this, Aware.class);
@@ -156,26 +154,29 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         //Apply settings
         Aware.startLocations(this);
 
+        //데이터베이스 초기화(이미되있으면생략), 접근 객체 생성
+        //DB헬퍼를 쓸려면 다 이 코드를 호출해야 하는 모양...
+        final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT survey FROM USER WHERE id = '" + user_name + "' ;", null);
+        cursor.moveToNext();
+        String user_survey = cursor.getString(0);
+        if(user_survey.equals("000")) {
+            Intent intent = new Intent(getApplicationContext(), SurveyActivity.class);
+            intent.putExtra("username", user_name);
+            startActivity(intent);
+        }
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_now);
         //이상이 기본 코드... 라 생각하면 된다.
 
-
-
-
         ActionBar appbar = getSupportActionBar();
-
-
-        //데이터베이스 초기화(이미되있으면생략), 접근 객체 생성
-        //DB헬퍼를 쓸려면 다 이 코드를 호출해야 하는 모양...
-        final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
-
 
         Log.d(TAG, "onCreate");
         mActivity = this;
-
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -183,17 +184,14 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
                 .addApi(LocationServices.API)
                 .build();
 
-
         //데이터베이스 튜플 넣는 테스트코드
-
 
         //이거 막줄 this로 onMapReady함수가 호출된다. 지도 UI매핑완료하고 초기설정하는 작업.
         //실행흐름상 둘다 처음 시작 시 한번만 실행되고, 순서는 onCreate -> onMapReady -> 다시 onCreate다.
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
-        Button gotovisitBtn = (Button)findViewById(R.id.gotovisit);
+        Button gotovisitBtn = (Button) findViewById(R.id.gotovisit);
         gotovisitBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -203,9 +201,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-
-
-        Toast msg =Toast.makeText(this, "done", Toast.LENGTH_LONG);
+        Toast msg = Toast.makeText(this, "done", Toast.LENGTH_LONG);
         msg.show();
         //마커 그리는 코드는 밑에 맵 초기화 함수에서 돌림
     }
@@ -240,7 +236,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
             Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
             showDialogForLocationServiceSetting();
-        }else {
+        } else {
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -262,7 +258,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void stopLocationUpdates() {
 
-        Log.d(TAG,"stopLocationUpdates : LocationServices.FusedLocationApi.removeLocationUpdates");
+        Log.d(TAG, "stopLocationUpdates : LocationServices.FusedLocationApi.removeLocationUpdates");
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         mRequestingLocationUpdates = false;
     }
@@ -281,12 +277,12 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         //mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(0));
-        mGoogleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener(){
+        mGoogleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
 
             @Override
             public boolean onMyLocationButtonClick() {
 
-                Log.d( TAG, "onMyLocationButtonClick : 위치에 따른 카메라 이동 활성화");
+                Log.d(TAG, "onMyLocationButtonClick : 위치에 따른 카메라 이동 활성화");
                 mMoveMapByAPI = true;
                 return true;
             }
@@ -296,7 +292,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng latLng) {
 
-                Log.d( TAG, "onMapClick :");
+                Log.d(TAG, "onMapClick :");
             }
         });
 
@@ -305,7 +301,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onCameraMoveStarted(int i) {
 
-                if (mMoveMapByUser == true && mRequestingLocationUpdates){
+                if (mMoveMapByUser == true && mRequestingLocationUpdates) {
 
                     Log.d(TAG, "onCameraMove : 위치에 따른 카메라 이동 비활성화");
                     mMoveMapByAPI = false;
@@ -337,7 +333,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onLocationChanged(Location location) {
 
         currentPosition
-                = new LatLng( location.getLatitude(), location.getLongitude());
+                = new LatLng(location.getLatitude(), location.getLongitude());
 
 
         Log.d(TAG, "onLocationChanged : ");
@@ -355,7 +351,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
 
-        if(mGoogleApiClient != null && mGoogleApiClient.isConnected() == false){
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected() == false) {
 
             Log.d(TAG, "onStart: mGoogleApiClient connect");
             mGoogleApiClient.connect();
@@ -373,7 +369,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
             stopLocationUpdates();
         }
 
-        if ( mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient.isConnected()) {
 
             Log.d(TAG, "onStop : mGoogleApiClient disconnect");
             mGoogleApiClient.disconnect();
@@ -386,7 +382,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onConnected(Bundle connectionHint) {
 
 
-        if ( mRequestingLocationUpdates == false ) {
+        if (mRequestingLocationUpdates == false) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -407,7 +403,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
                     mGoogleMap.setMyLocationEnabled(true);
                 }
 
-            }else{
+            } else {
 
                 Log.d(TAG, "onConnected : call startLocationUpdates");
                 startLocationUpdates();
@@ -497,10 +493,10 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         currentMarker = mGoogleMap.addMarker(markerOptions);
 
 
-        if ( mMoveMapByAPI ) {
+        if (mMoveMapByAPI) {
 
-            Log.d( TAG, "setCurrentLocation :  mGoogleMap moveCamera "
-                    + location.getLatitude() + " " + location.getLongitude() ) ;
+            Log.d(TAG, "setCurrentLocation :  mGoogleMap moveCamera "
+                    + location.getLatitude() + " " + location.getLongitude());
             // CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
             mGoogleMap.moveCamera(cameraUpdate);
@@ -556,7 +552,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
             Log.d(TAG, "checkPermissions : 퍼미션 가지고 있음");
 
-            if ( mGoogleApiClient.isConnected() == false) {
+            if (mGoogleApiClient.isConnected() == false) {
 
                 Log.d(TAG, "checkPermissions : 퍼미션 가지고 있음");
                 mGoogleApiClient.connect();
@@ -577,12 +573,11 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
             if (permissionAccepted) {
 
 
-                if ( mGoogleApiClient.isConnected() == false) {
+                if (mGoogleApiClient.isConnected() == false) {
 
                     Log.d(TAG, "onRequestPermissionsResult : mGoogleApiClient connect");
                     mGoogleApiClient.connect();
                 }
-
 
 
             } else {
@@ -683,9 +678,9 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
                         Log.d(TAG, "onActivityResult : 퍼미션 가지고 있음");
 
 
-                        if ( mGoogleApiClient.isConnected() == false ) {
+                        if (mGoogleApiClient.isConnected() == false) {
 
-                            Log.d( TAG, "onActivityResult : mGoogleApiClient connect ");
+                            Log.d(TAG, "onActivityResult : mGoogleApiClient connect ");
                             mGoogleApiClient.connect();
                         }
                         return;
@@ -698,7 +693,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> adapter, View view, int position, long id){
+        public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 
         }
     }

@@ -16,11 +16,12 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static team4.com.wig_aware.NowActivity.dbVersion;
-
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+
+    //데이터베이스 버전
+    public static final int dbVersion = 5;
 
     @BindView(R.id.input_email)
     EditText _emailText;
