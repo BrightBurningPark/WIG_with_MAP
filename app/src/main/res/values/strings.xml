@@ -9,7 +9,7 @@
     <string name="비밀번호">비밀번호</string>
     <string name="다시하시">설문조사를 다시 하시겠습니까?</string>
     <string name="id">id</string>
-    <string name="password">password</string>
+    <string name="password">**********</string>
     <string name="newpw">새로운 비밀번호</string>
     <string name="저장">저장</string>
 </resources>

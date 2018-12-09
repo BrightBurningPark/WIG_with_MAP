@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class SettingsActivity extends AppCompatActivity {
+    String user_name;
 
     Button[] mButton = new Button[6];
 
@@ -20,25 +21,26 @@ public class SettingsActivity extends AppCompatActivity {
         mButton[0] = (Button) findViewById(R.id.BtnModify);
         mButton[1] = (Button) findViewById(R.id.BtnRetry);
 
-        Intent intent = getIntent();
-        String pw = intent.getStringExtra("입력한 pw");
-        TextView pwtextview = (TextView) findViewById(R.id.password);
-        pwtextview.setText(pw);
+        Intent intent_log = getIntent();
+        user_name = intent_log.getStringExtra("username");
+
+        TextView id_textview = (TextView) findViewById(R.id.user_id);
+        id_textview.setText(user_name);
     }
 
-    public void onClick(View view){
+    public void onClickSetting(View view){
 
         Button newButton = (Button) view;
 
         if(newButton == mButton[0]){
-            Intent intent = new Intent(this, UserinfoActivity.class);
+            Intent intent = new Intent(this, UserInfoActivity.class);
+            intent.putExtra("username", user_name);
             startActivity(intent);
-            finish();
         }
         if(newButton == mButton[1]){
             Intent intent = new Intent(this, SurveyActivity.class);
+            intent.putExtra("username", user_name);
             startActivity(intent);
         }
-
     }
 }

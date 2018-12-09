@@ -697,4 +697,9 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
 
         }
     }
+    public void onClickButton(View view){
+        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+        intent.putExtra("username", user_name);
+        startActivity(intent);
+    }
 }
