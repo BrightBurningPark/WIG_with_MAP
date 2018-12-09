@@ -119,4 +119,16 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/BtnModify" />
 
+    <Button
+        android:id="@+id/btnSetDaily"
+        android:layout_width="345dp"
+        android:layout_height="87dp"
+        android:layout_marginTop="30dp"
+        android:onClick="onClickSetting"
+        android:text="일상 활동지역 바꾸기"
+        android:textSize="15sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/BtnRetry" />
+
 </android.support.constraint.ConstraintLayout>

@@ -45,7 +45,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS USER (" +
                 "id TEXT PRIMARY KEY, " +
                 "password TEXT, " +
-                "survey TEXT " +
+                "survey TEXT, " +
+                "latitude REAL, " +
+                "longitude REAL " +
                 ");");
 
     }
