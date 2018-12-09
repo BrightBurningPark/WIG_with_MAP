@@ -34,7 +34,7 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".SurveyActivity" />
         <activity android:name=".UserInfoActivity" />
-
+        <activity android:name=".RecomActivity" />
     </application>
 
 </manifest>

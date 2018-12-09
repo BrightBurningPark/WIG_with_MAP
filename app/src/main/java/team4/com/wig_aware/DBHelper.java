@@ -11,6 +11,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -29,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //db.execSQL("CREATE TABLE MONEYBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, create_at TEXT);");
 
         //상기 코드 참고해서 데이터베이스 튜플 설정.
-        //여행지 -> 주소(PRIMARY KEY), 위도, 경도, 국가, 지리특색, 인구밀도, 기온
+        //여행지 -> 이름(primary key), 위도 경도, 국가, 지형특징, 국내국외(크라우드 이름 바꾸기 귀찮아서) thermo
         //칼럼 별 세부사항은 README 참고
         db.execSQL("CREATE TABLE IF NOT EXISTS PLACE (" +
                 "name TEXT PRIMARY KEY, " +
@@ -49,6 +53,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "latitude REAL, " +
                 "longitude REAL " +
                 ");");
+
+
 
     }
 
@@ -108,54 +114,104 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<ListViewRecItem> getRecommend(String id, int opFlag) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ArrayList<ListViewRecItem> list = new ArrayList<ListViewRecItem>();
+
+        List<Integer> geo;
+        List<Integer> crowd;
+        List<Integer> thermo;
+
+        //위리스트: 설문을 기반으로 추천
+        if(opFlag == 0) {
+            Cursor cursor = db.rawQuery("SELECT survey FROM USERS WHERE id='"+ id +"';", null);
+
+            cursor.moveToNext();
+            String word = cursor.getString(0);
+            String[] array_word;
+            array_word = word.split("");
+
+            cursor = db.rawQuery("SELECT name FROM PLACES WHERE geo="+array_word[1]+" AND crowd="+array_word[2]+" AND thermo="+array_word[3]+";", null);
+
+            while(cursor.moveToNext()){
+                ListViewRecItem item = new ListViewRecItem();
+                item.setTitle(cursor.getString(0));
+                list.add(item);
+            }
 
 
-    //이하는 원래 읽고 쓰고 하는 코드인데...
-    // 그냥 버튼에다가 SQL쿼리 직접 할당하는게 훨씬 나아보여서 안함.
+        }
+        else if(opFlag == 1){
+            Cursor cursor = db.rawQuery("SELECT geo AS G, crowd AS C, thermo AS T FROM PLACES", null);
 
-    public void insert_to_visited(String create_at, String item, int price) {
-        // 읽고 쓰기가 가능하게 DB 열기
-        SQLiteDatabase db = getWritableDatabase();
-        // DB에 입력한 값으로 행 추가
-        //db.execSQL("INSERT INTO PLACES VALUES(" +"'test'"+ ",'KOR'"+", 38, 120, "+"'MOUNTAIN'"+", 1, 25);");
-        db.close();
-    }
+            int[] ans1 = new int[cursor.getCount()];
+            int[] ans2 = new int[cursor.getCount()];
+            int[] ans3 = new int[cursor.getCount()];
+            int i = 0;
+            while(cursor.moveToNext()){
+                ans1[i] = cursor.getInt(0);
+                ans2[i] = cursor.getInt(1);
+                ans3[i] = cursor.getInt(2);
+                i++;
+            }
+            geo = mode(ans1);
+            crowd = mode(ans2);
+            thermo = mode(ans3);
 
-    /*
-    public void update(String item, int price) {
-        SQLiteDatabase db = getWritableDatabase();
-        // 입력한 항목과 일치하는 행의 가격 정보 수정
-        db.execSQL("UPDATE MONEYBOOK SET price=" + price + " WHERE item='" + item + "';");
-        db.close();
-    }
 
-    public void delete(String item) {
-        SQLiteDatabase db = getWritableDatabase();
-        // 입력한 항목과 일치하는 행 삭제
-        db.execSQL("DELETE FROM MONEYBOOK WHERE item='" + item + "';");
-        db.close();
-    }
+            cursor = db.rawQuery("SELECT name FROM PLACES WHERE geo="+geo.get(0)+" AND crowd="+crowd.get(0)+" AND thermo="+thermo.get(0)+";", null);
 
-    public String getResult() {
-        // 읽기가 가능하게 DB 열기
-        SQLiteDatabase db = getReadableDatabase();
-        String result = "";
+            while(cursor.moveToNext()){
+                ListViewRecItem item = new ListViewRecItem();
+                item.setTitle(cursor.getString(0));
+                list.add(item);
+            }
 
-        // DB에 있는 데이터를 쉽게 처리하기 위해 Cursor를 사용하여 테이블에 있는 모든 데이터 출력
-        Cursor cursor = db.rawQuery("SELECT * FROM MONEYBOOK", null);
-        while (cursor.moveToNext()) {
-            result += cursor.getString(0)
-                    + " : "
-                    + cursor.getString(1)
-                    + " | "
-                    + cursor.getInt(2)
-                    + "원 "
-                    + cursor.getString(3)
-                    + "\n";
+
         }
 
-        return result;
+        //ListViewRecItem item = new ListViewRecItem();
+        //item.setTitle("test");
+        //list.add(item);
+        //아래 리스트: 기록을 바탕으로 추천
+
+
+
+        return list;
+
     }
-    */
+
+    public static List<Integer> mode(final int[] numbers) {
+        final List<Integer> modes = new ArrayList<Integer>();
+        final Map<Integer, Integer> countMap = new HashMap<Integer, Integer>();
+
+        int max = -1;
+
+        for (final int n : numbers) {
+            int count = 0;
+
+            if (countMap.containsKey(n)) {
+                count = countMap.get(n) + 1;
+            } else {
+                count = 1;
+            }
+
+            countMap.put(n, count);
+
+            if (count > max) {
+                max = count;
+            }
+        }
+
+        for (final Map.Entry<Integer, Integer> tuple : countMap.entrySet()) {
+            if (tuple.getValue() == max) {
+                modes.add(tuple.getKey());
+            }
+        }
+
+        return modes;
+    }
+
 }
 
