@@ -11,6 +11,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -29,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //db.execSQL("CREATE TABLE MONEYBOOK (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, create_at TEXT);");
 
         //상기 코드 참고해서 데이터베이스 튜플 설정.
-        //여행지 -> 주소(PRIMARY KEY), 위도, 경도, 국가, 지리특색, 인구밀도, 기온
+        //여행지 -> 이름(primary key), 위도 경도, 국가, 지형특징, 국내국외(크라우드 이름 바꾸기 귀찮아서) thermo
         //칼럼 별 세부사항은 README 참고
         db.execSQL("CREATE TABLE IF NOT EXISTS PLACE (" +
                 "name TEXT PRIMARY KEY, " +
@@ -106,114 +110,113 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<ListViewRecomItem> getRecomList(String id, int opFlag) {
+    public ArrayList<ListViewRecItem> getRecommend(String id, int opFlag) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ArrayList<ListViewRecomItem> rtn = new ArrayList<ListViewRecomItem>();
+        ArrayList<ListViewRecItem> list = new ArrayList<ListViewRecItem>();
 
-        int geo_mode;
-        int crowd_mode;
-        int thermo_mode;
+        List<Integer> geo;
+        List<Integer> crowd;
+        List<Integer> thermo;
 
         //위리스트: 설문을 기반으로 추천
         if(opFlag == 0) {
-            Cursor temp = db.rawQuery("SELECT survey FROM USERS WHERE id='"+ id +"';", null);
-            temp.moveToNext();
-            String survey_result = temp.getString(0);
+            Cursor cursor = db.rawQuery("SELECT geo AS G, crowd AS C, thermo AS T FROM PLACES", null);
 
-            String[] array_survey;
-            array_survey = survey_result.split("");
-
-            Cursor cursor = db.rawQuery("select * from PLACES where geo="+array_survey[1]+" and crowd="+array_survey[2]+" and thermo="+array_survey[3]+";", null);
-
-            while (cursor.moveToNext()) {
-                ListViewRecomItem item = new ListViewRecomItem();
-
-                item.setId(cursor.getInt(0));
-                item.setVisited(cursor.getString(1));
-                item.setDate(cursor.getString(2));
-                item.setDur(cursor.getInt(3));
-
-                rtn.add(item);
-
+            int[] ans1 = new int[cursor.getCount()];
+            int[] ans2 = new int[cursor.getCount()];
+            int[] ans3 = new int[cursor.getCount()];
+            int i = 0;
+            while(cursor.moveToNext()){
+                ans1[i] = cursor.getInt(0);
+                ans2[i] = cursor.getInt(1);
+                ans3[i] = cursor.getInt(2);
+                i++;
             }
+            geo = mode(ans1);
+            crowd = mode(ans2);
+            thermo = mode(ans3);
+
+
+            cursor = db.rawQuery("SELECT name FROM PLACES WHERE geo="+geo.get(0)+" AND crowd="+crowd.get(0)+" AND thermo="+thermo.get(0)+";", null);
+
+            while(cursor.moveToNext()){
+                ListViewRecItem item = new ListViewRecItem();
+                item.setTitle(cursor.getString(0));
+                list.add(item);
+            }
+
         }
-        //아래 리스트: 기록을 바탕으로 추천
         else if(opFlag == 1){
-            //geo_mode = db.rawQuery("select geo as mode, COUNT(*) as count FROM PLACES group by geo having COUNT(*) >= ALL(select count(*) FROM PLACES GROUP BY geo);", null).getInt(1);
-            //crowd_mode = db.rawQuery("select crowd as mode, COUNT(*) as count FROM PLACES group by crowd having COUNT(*) >= ALL(select count(*) FROM PLACES GROUP BY crowd);", null).getInt(1);
-            //thermo_mode = db.rawQuery("select thermo as mode, COUNT(*) as count FROM PLACES group by thermo having COUNT(*) >= ALL(select count(*) FROM PLACES GROUP BY thermo);", null).getInt(1);
+            Cursor cursor = db.rawQuery("SELECT geo AS G, crowd AS C, thermo AS T FROM PLACES", null);
 
-            geo_mode = 1;
-            crowd_mode = 1;
-            thermo_mode = 1;
+            int[] ans1 = new int[cursor.getCount()];
+            int[] ans2 = new int[cursor.getCount()];
+            int[] ans3 = new int[cursor.getCount()];
+            int i = 0;
+            while(cursor.moveToNext()){
+                ans1[i] = cursor.getInt(0);
+                ans2[i] = cursor.getInt(1);
+                ans3[i] = cursor.getInt(2);
+                i++;
+            }
+            geo = mode(ans1);
+            crowd = mode(ans2);
+            thermo = mode(ans3);
 
 
-            Cursor cursor = db.rawQuery("select * from PLACES where geo="+geo_mode+" and crowd="+crowd_mode+" and thermo="+thermo_mode+";", null);
-            while (cursor.moveToNext()) {
-                ListViewRecomItem item = new ListViewRecomItem();
+            cursor = db.rawQuery("SELECT name FROM PLACES WHERE geo="+geo.get(0)+" AND crowd="+crowd.get(0)+" AND thermo="+thermo.get(0)+";", null);
 
-                item.setId(cursor.getInt(0));
-                item.setVisited(cursor.getString(1));
-                item.setDate(cursor.getString(2));
-                item.setDur(cursor.getInt(3));
+            while(cursor.moveToNext()){
+                ListViewRecItem item = new ListViewRecItem();
+                item.setTitle(cursor.getString(0));
+                list.add(item);
+            }
 
-                rtn.add(item);
 
+        }
+
+        //ListViewRecItem item = new ListViewRecItem();
+        //item.setTitle("test");
+        //list.add(item);
+        //아래 리스트: 기록을 바탕으로 추천
+
+
+
+        return list;
+
+    }
+
+    public static List<Integer> mode(final int[] numbers) {
+        final List<Integer> modes = new ArrayList<Integer>();
+        final Map<Integer, Integer> countMap = new HashMap<Integer, Integer>();
+
+        int max = -1;
+
+        for (final int n : numbers) {
+            int count = 0;
+
+            if (countMap.containsKey(n)) {
+                count = countMap.get(n) + 1;
+            } else {
+                count = 1;
+            }
+
+            countMap.put(n, count);
+
+            if (count > max) {
+                max = count;
             }
         }
 
-        return rtn;
-    }
-
-
-
-    //이하는 원래 읽고 쓰고 하는 코드인데...
-    // 그냥 버튼에다가 SQL쿼리 직접 할당하는게 훨씬 나아보여서 안함.
-
-    public void insert_to_visited(String create_at, String item, int price) {
-        // 읽고 쓰기가 가능하게 DB 열기
-        SQLiteDatabase db = getWritableDatabase();
-        // DB에 입력한 값으로 행 추가
-        //db.execSQL("INSERT INTO PLACES VALUES(" +"'test'"+ ",'KOR'"+", 38, 120, "+"'MOUNTAIN'"+", 1, 25);");
-        db.close();
-    }
-
-    /*
-    public void update(String item, int price) {
-        SQLiteDatabase db = getWritableDatabase();
-        // 입력한 항목과 일치하는 행의 가격 정보 수정
-        db.execSQL("UPDATE MONEYBOOK SET price=" + price + " WHERE item='" + item + "';");
-        db.close();
-    }
-
-    public void delete(String item) {
-        SQLiteDatabase db = getWritableDatabase();
-        // 입력한 항목과 일치하는 행 삭제
-        db.execSQL("DELETE FROM MONEYBOOK WHERE item='" + item + "';");
-        db.close();
-    }
-
-    public String getResult() {
-        // 읽기가 가능하게 DB 열기
-        SQLiteDatabase db = getReadableDatabase();
-        String result = "";
-
-        // DB에 있는 데이터를 쉽게 처리하기 위해 Cursor를 사용하여 테이블에 있는 모든 데이터 출력
-        Cursor cursor = db.rawQuery("SELECT * FROM MONEYBOOK", null);
-        while (cursor.moveToNext()) {
-            result += cursor.getString(0)
-                    + " : "
-                    + cursor.getString(1)
-                    + " | "
-                    + cursor.getInt(2)
-                    + "원 "
-                    + cursor.getString(3)
-                    + "\n";
+        for (final Map.Entry<Integer, Integer> tuple : countMap.entrySet()) {
+            if (tuple.getValue() == max) {
+                modes.add(tuple.getKey());
+            }
         }
 
-        return result;
+        return modes;
     }
-    */
+
 }
 
