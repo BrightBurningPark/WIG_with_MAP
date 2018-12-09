@@ -42,7 +42,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 ");");
 
         //사용자 테이블 USER -> id, password, 설문조사 결과 스트링(나중에 파싱해서 쓰면 됨)
-        db.execSQL("CREATE TABLE IF NOT EXISTS USERS (" +
+        db.execSQL("CREATE TABLE IF NOT EXISTS USER (" +
                 "id TEXT PRIMARY KEY, " +
                 "password TEXT, " +
                 "survey TEXT " +
@@ -56,7 +56,7 @@ public class DBHelper extends SQLiteOpenHelper {
         switch (oldVersion){
             default :
                 db.execSQL("DROP TABLE IF EXISTS PLACE");
-                db.execSQL("DROP TABLE IF EXISTS USERS");
+                db.execSQL("DROP TABLE IF EXISTS USER");
         }
     }
 
@@ -65,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void drawPlaceMarker(GoogleMap googleMap){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM PLACES", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM PLACE", null);
 
         while(cursor.moveToNext()){
             //마커 생성 & 옵션 설정.

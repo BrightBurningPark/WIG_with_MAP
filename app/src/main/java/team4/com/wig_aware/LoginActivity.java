@@ -94,14 +94,14 @@ public class LoginActivity extends AppCompatActivity {
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 1000);
     }
 
     private boolean auth(String email, String in_password){
         final DBHelper dbHelper = new DBHelper(this, "WIG.db", null, dbVersion);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        if(db.rawQuery("SELECT * FROM USERS AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null) != null){
+        if(db.rawQuery("SELECT * FROM USER AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null) != null){
             db.close();
             return true;
         }
