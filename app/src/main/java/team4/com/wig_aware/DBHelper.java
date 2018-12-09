@@ -52,6 +52,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "survey TEXT " +
                 ");");
 
+
+
     }
 
     // DB 업그레이드를 위해 버전이 변경될 때 호출되는 함수
@@ -121,30 +123,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //위리스트: 설문을 기반으로 추천
         if(opFlag == 0) {
-            Cursor cursor = db.rawQuery("SELECT geo AS G, crowd AS C, thermo AS T FROM PLACES", null);
+            Cursor cursor = db.rawQuery("SELECT survey FROM USERS WHERE id='"+ id +"';", null);
 
-            int[] ans1 = new int[cursor.getCount()];
-            int[] ans2 = new int[cursor.getCount()];
-            int[] ans3 = new int[cursor.getCount()];
-            int i = 0;
-            while(cursor.moveToNext()){
-                ans1[i] = cursor.getInt(0);
-                ans2[i] = cursor.getInt(1);
-                ans3[i] = cursor.getInt(2);
-                i++;
-            }
-            geo = mode(ans1);
-            crowd = mode(ans2);
-            thermo = mode(ans3);
+            cursor.moveToNext();
+            String word = cursor.getString(0);
+            String[] array_word;
+            array_word = word.split("");
 
-
-            cursor = db.rawQuery("SELECT name FROM PLACES WHERE geo="+geo.get(0)+" AND crowd="+crowd.get(0)+" AND thermo="+thermo.get(0)+";", null);
+            cursor = db.rawQuery("SELECT name FROM PLACES WHERE geo="+array_word[1]+" AND crowd="+array_word[2]+" AND thermo="+array_word[3]+";", null);
 
             while(cursor.moveToNext()){
                 ListViewRecItem item = new ListViewRecItem();
                 item.setTitle(cursor.getString(0));
                 list.add(item);
             }
+
 
         }
         else if(opFlag == 1){

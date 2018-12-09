@@ -51,22 +51,50 @@ public class RecomActivity extends AppCompatActivity implements View.OnClickList
         listFragmentSurvey = new ListFragmentSurvey();
         listFragmentVisit = new ListFragmentVisit();
 
-        ArrayList<ListViewRecItem> list = new ArrayList<ListViewRecItem>();
+        ArrayList<ListViewRecItem> list1 = new ArrayList<ListViewRecItem>();
 
-        list = dbHelper.getRecommend(user_name, 0);
-        for(int i=0; i<list.size(); i++) {
-            listFragmentSurvey.addItem(list.get(i).getTitle());
+        list1 = dbHelper.getRecommend(user_name, 0);
+        for(int i=0; i<list1.size(); i++) {
+            listFragmentSurvey.addItem(list1.get(i).getTitle());
         }
-        list = dbHelper.getRecommend(user_name, 1);
-        for(int i=0; i<list.size(); i++) {
-            listFragmentVisit.addItem(list.get(i).getTitle());
+
+
+        ArrayList<ListViewRecItem> list2 = new ArrayList<ListViewRecItem>();
+
+        list2 = dbHelper.getRecommend(user_name, 1);
+        for(int i=0; i<list2.size(); i++) {
+            listFragmentVisit.addItem(list2.get(i).getTitle());
         }
+
+
+
+        //ArrayList<ListViewRecItem> list1 = new ArrayList<ListViewRecItem>();
+        //ArrayList<ListViewRecItem> list2 = new ArrayList<ListViewRecItem>();
+
+
+        /*
+        list1 = dbHelper.getRecommend(user_name, 0);
+        for(int i=0; i<list1.size(); i++) {
+            listFragmentSurvey.addItem(list1.get(i).getTitle());
+        }
+        */
+
+        /*
+        list2 = dbHelper.getRecommend(user_name, 1);
+        for(int i=0; i<list2.size(); i++) {
+            listFragmentVisit.addItem(list2.get(i).getTitle());
+        }
+        */
         //listFragmentVisit.add
+
+        this.onClick(findViewById(R.id.btn_frag1));
 
     }
 
     @Override
     public void onClick(View v) {
+        final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
+
         switch (v.getId()) {
             case R.id.btn_frag1:
 
@@ -76,9 +104,10 @@ public class RecomActivity extends AppCompatActivity implements View.OnClickList
                         .commit();
                 break;
             case R.id.btn_frag2:
+
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.frag_container_, new ListFragmentVisit())
+                        .replace(R.id.frag_container_, listFragmentVisit)
                         .commit();
                 break;
 

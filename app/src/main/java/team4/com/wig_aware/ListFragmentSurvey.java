@@ -10,24 +10,24 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 public class ListFragmentSurvey extends ListFragment {
-    ListViewRecAdapter adapter ;
+    ListViewRecAdapter adapter1 ;
 
     public ListFragmentSurvey(){
-        this.adapter = new ListViewRecAdapter();
+        this.adapter1 = new ListViewRecAdapter();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Adapter 생성 및 Adapter 지정.
-        setListAdapter(adapter) ;
+        setListAdapter(adapter1) ;
 
         return inflater.inflate(R.layout.fragment_layout1, container, false);
 
     }
 
     public void addItem(String title) {
-        adapter.addItem(title) ;
+        adapter1.addItem(title) ;
     }
 
 
