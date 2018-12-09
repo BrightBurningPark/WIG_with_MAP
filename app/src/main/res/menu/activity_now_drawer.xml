@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_info"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="여행지 정보" />
+    </group>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/simple_explain"
+            android:text="Text1" />
+
+    <item android:title="WIG">
+
+        <menu>
+            <item
+                android:id="@+id/nav_go"
+                android:icon="@drawable/ic_menu_send"
+                android:title="떠나기" />
+
+            <!--
+            <item
+                android:id="@+id/nav_"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="" />
+                -->
+        </menu>
+    </item>
+
+</menu>

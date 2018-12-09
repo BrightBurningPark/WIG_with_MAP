@@ -106,6 +106,66 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<ListViewRecomItem> getRecomList(String id, int opFlag) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ArrayList<ListViewRecomItem> rtn = new ArrayList<ListViewRecomItem>();
+
+        int geo_mode;
+        int crowd_mode;
+        int thermo_mode;
+
+        //위리스트: 설문을 기반으로 추천
+        if(opFlag == 0) {
+            Cursor temp = db.rawQuery("SELECT survey FROM USERS WHERE id='"+ id +"';", null);
+            temp.moveToNext();
+            String survey_result = temp.getString(0);
+
+            String[] array_survey;
+            array_survey = survey_result.split("");
+
+            Cursor cursor = db.rawQuery("select * from PLACES where geo="+array_survey[1]+" and crowd="+array_survey[2]+" and thermo="+array_survey[3]+";", null);
+
+            while (cursor.moveToNext()) {
+                ListViewRecomItem item = new ListViewRecomItem();
+
+                item.setId(cursor.getInt(0));
+                item.setVisited(cursor.getString(1));
+                item.setDate(cursor.getString(2));
+                item.setDur(cursor.getInt(3));
+
+                rtn.add(item);
+
+            }
+        }
+        //아래 리스트: 기록을 바탕으로 추천
+        else if(opFlag == 1){
+            //geo_mode = db.rawQuery("select geo as mode, COUNT(*) as count FROM PLACES group by geo having COUNT(*) >= ALL(select count(*) FROM PLACES GROUP BY geo);", null).getInt(1);
+            //crowd_mode = db.rawQuery("select crowd as mode, COUNT(*) as count FROM PLACES group by crowd having COUNT(*) >= ALL(select count(*) FROM PLACES GROUP BY crowd);", null).getInt(1);
+            //thermo_mode = db.rawQuery("select thermo as mode, COUNT(*) as count FROM PLACES group by thermo having COUNT(*) >= ALL(select count(*) FROM PLACES GROUP BY thermo);", null).getInt(1);
+
+            geo_mode = 1;
+            crowd_mode = 1;
+            thermo_mode = 1;
+
+
+            Cursor cursor = db.rawQuery("select * from PLACES where geo="+geo_mode+" and crowd="+crowd_mode+" and thermo="+thermo_mode+";", null);
+            while (cursor.moveToNext()) {
+                ListViewRecomItem item = new ListViewRecomItem();
+
+                item.setId(cursor.getInt(0));
+                item.setVisited(cursor.getString(1));
+                item.setDate(cursor.getString(2));
+                item.setDur(cursor.getInt(3));
+
+                rtn.add(item);
+
+            }
+        }
+
+        return rtn;
+    }
+
 
 
     //이하는 원래 읽고 쓰고 하는 코드인데...

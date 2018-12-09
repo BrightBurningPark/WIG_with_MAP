@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v4.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -129,6 +130,10 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+
+        //사용자 이름 전역변수로 공유
+        ((MyApplication)this.getApplication()).setUser_id(_emailText.getText().toString());
+
         Intent intent = new Intent(getApplicationContext(), NowActivity.class);
         intent.putExtra("username", _emailText.getText().toString());
         startActivity(intent);
