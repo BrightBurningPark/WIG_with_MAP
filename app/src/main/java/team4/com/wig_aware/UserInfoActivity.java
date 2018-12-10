@@ -26,7 +26,7 @@ public class UserInfoActivity extends AppCompatActivity {
         // 입력한 password를 userDB에 update
         final DBHelper dbHelper = new DBHelper(this, "WIG.db", null, dbVersion);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.execSQL("UPDATE USER SET password = '" + pw + "' WHERE id = '" + user_name + "' ;");
+        db.execSQL("UPDATE USERS SET password = '" + pw + "' WHERE id = '" + user_name + "' ;");
         db.close();
 
         Toast.makeText(this, "비밀번호가 변경되었습니다", Toast.LENGTH_SHORT).show();

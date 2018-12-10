@@ -52,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
             double latitude = ((MyApplication) this.getApplication()).getCurrent_lat();
             double longitude = ((MyApplication) this.getApplication()).getCurrent_lon();
 
-            db.execSQL("UPDATE USER SET latitude = '" + latitude + "', longitude = '" + longitude + "' WHERE id = '" + user_name + "' ;");
+            db.execSQL("UPDATE USERS SET latitude = " + latitude + ", longitude = " + longitude + " WHERE id = '" + user_name + "' ;");
             db.close();
             Toast msg = Toast.makeText(this, "일상 활동지역이 변경되었습니다", Toast.LENGTH_LONG);
             msg.show();

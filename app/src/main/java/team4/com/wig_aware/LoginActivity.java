@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean auth(String email, String in_password) {
         final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM USER AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM USERS AS U WHERE U.id = '" + email + "' AND U.password = '" + in_password + "';", null);
         if (cursor.moveToFirst() && cursor.getCount() > 0) {
             db.close();
             return true;

@@ -177,7 +177,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         final DBHelper dbHelper = new DBHelper(getApplicationContext(), "WIG.db", null, dbVersion);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT survey FROM USER WHERE id = '" + user_name + "' ;", null);
+        Cursor cursor = db.rawQuery("SELECT survey FROM USERS WHERE id = '" + user_name + "' ;", null);
         if (cursor.moveToFirst() && cursor.getCount() > 0) {
             String user_survey = cursor.getString(0);
             if (user_survey.equals("000")) {
@@ -786,7 +786,8 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
         if (id == R.id.nav_info) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://ko.wikipedia.org/wiki/"+gMarker.getTitle())));
         } else if (id == R.id.nav_go) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://naver.com")));
+            //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://naver.com")));
+            onClickDrawerSetting();
         }
 
         /*
@@ -847,7 +848,7 @@ public class NowActivity extends AppCompatActivity implements OnMapReadyCallback
     }
     */
 
-    public void onClickDrawerSetting(View view){
+    public void onClickDrawerSetting(){
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
         startActivity(intent);
     }

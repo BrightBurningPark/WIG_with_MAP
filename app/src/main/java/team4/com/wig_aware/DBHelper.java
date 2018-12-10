@@ -35,7 +35,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //상기 코드 참고해서 데이터베이스 튜플 설정.
         //여행지 -> 이름(primary key), 위도 경도, 국가, 지형특징, 국내국외(크라우드 이름 바꾸기 귀찮아서) thermo
         //칼럼 별 세부사항은 README 참고
-        db.execSQL("CREATE TABLE IF NOT EXISTS PLACE (" +
+        db.execSQL("CREATE TABLE IF NOT EXISTS PLACES (" +
                 "name TEXT PRIMARY KEY, " +
                 "lat REAL, " +
                 "lon REAL, " +
@@ -46,7 +46,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 ");");
 
         //사용자 테이블 USER -> id, password, 설문조사 결과 스트링(나중에 파싱해서 쓰면 됨)
-        db.execSQL("CREATE TABLE IF NOT EXISTS USER (" +
+        db.execSQL("CREATE TABLE IF NOT EXISTS USERS (" +
                 "id TEXT PRIMARY KEY, " +
                 "password TEXT, " +
                 "survey TEXT, " +
@@ -63,8 +63,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         switch (oldVersion){
             default :
-                db.execSQL("DROP TABLE IF EXISTS PLACE");
-                db.execSQL("DROP TABLE IF EXISTS USER");
+                db.execSQL("DROP TABLE IF EXISTS PLACES");
+                db.execSQL("DROP TABLE IF EXISTS USERS");
         }
     }
 
@@ -73,7 +73,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void drawPlaceMarker(GoogleMap googleMap){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM PLACE", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM PLACES", null);
 
         while(cursor.moveToNext()){
             //마커 생성 & 옵션 설정.

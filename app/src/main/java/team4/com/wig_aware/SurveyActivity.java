@@ -53,7 +53,7 @@ public class SurveyActivity extends AppCompatActivity {
         } else {
             final DBHelper dbHelper = new DBHelper(this, "WIG.db", null, dbVersion);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
-            db.execSQL("UPDATE USER SET survey = '" + ret_answer + "' WHERE id = '" + user_name + "' ;");
+            db.execSQL("UPDATE USERS SET survey = '" + ret_answer + "' WHERE id = '" + user_name + "' ;");
             db.close();
             Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show();
             finish();
